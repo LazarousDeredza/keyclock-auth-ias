@@ -1,0 +1,29 @@
+server:
+  port: 8081
+  servlet:
+    context-path: /auth
+
+
+spring:
+  application:
+    name: auth
+  profiles:
+    active: production
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://${keycloak.domain}/realms/${keycloak.realm}
+jwt:
+  auth:
+    converter:
+      resource-id: authenticationClientId
+
+keycloak:
+  realm: intelli
+  domain: localhost:8080
+  adminClientId: admin-cli
+  adminClientSecret: ZXduDcu4ckBCULv7lNNRKV1ymx7TlrMH
+  client: authenticationClientId
+  urls:
+    auth: http://${keycloak.domain}
