@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -13,10 +14,15 @@ import org.springframework.security.web.SecurityFilterChain;
 @RequiredArgsConstructor
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class WebSecurityConfig {
 
     public static final String ADMIN = "admin";
     public static final String GENERAL = "general";
+    public  static final String DEFAULT_ROLE="default-roles-intelli";
+    public static final String DRIVER = "driver";
+    public static final String OPERATIONS = "operations";
+
     private final JwtAuthConverter jwtAuthConverter;
 
 
@@ -27,9 +33,20 @@ public class WebSecurityConfig {
         return httpSecurity
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.GET, "/test/anonymous", "/test/anonymous/**").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/swagger-ui/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/swagger-ui/**").permitAll()
+                        .requestMatchers("/v2/api-docs",
+                                "/v3/api-docs",
+                                "/v3/api-docs/**",
+                                "/swagger-resources",
+                                "/swagger-resources/**",
+                                "/configuration/ui",
+                                "/configuration/security",
+                                "/swagger-ui/**",
+                                "/webjars/**",
+                                "/swagger-ui.html").permitAll()
                         .requestMatchers(HttpMethod.GET, "/test/admin", "/test/admin/**").hasRole(ADMIN)
-                        .requestMatchers(HttpMethod.GET, "/test/user").hasAnyRole(GENERAL)
+                        .requestMatchers(HttpMethod.DELETE,"/users/**").hasRole(ADMIN)
+                        .requestMatchers(HttpMethod.GET, "/test/user").hasAnyRole(GENERAL,DEFAULT_ROLE,ADMIN)
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
@@ -48,7 +65,8 @@ public class WebSecurityConfig {
             web.ignoring().requestMatchers(
                     HttpMethod.POST,
                     "/public/**",
-                    "/users"
+                    "/users",
+                    "/login"
             );
             web.ignoring().requestMatchers(
                     HttpMethod.GET,
@@ -60,14 +78,16 @@ public class WebSecurityConfig {
             );
             web.ignoring().requestMatchers(
                     HttpMethod.PUT,
+                    "/users/**",
+                    "/users",
                     "/public/**"
             );
             web.ignoring().requestMatchers(
-                            HttpMethod.OPTIONS,
-                            "/**"
-                    );
-            web.ignoring() .requestMatchers("/v3/api-docs/**", "/configuration/**", "/swagger-ui/**",
-                            "/swagger-resources/**", "/swagger-ui.html", "/webjars/**", "/api-docs/**");
+                    HttpMethod.OPTIONS,
+                    "/**"
+            );
+            web.ignoring().requestMatchers("/v3/api-docs/**", "/configuration/**", "/swagger-ui/**",
+                    "/swagger-resources/**", "/swagger-ui.html", "/webjars/**", "/api-docs/**");
 
         };
     }
