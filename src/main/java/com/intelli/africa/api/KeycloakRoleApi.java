@@ -14,12 +14,19 @@ public class KeycloakRoleApi {
     private final RoleService roleService;
 
 
-    @PutMapping("/assign-role/user/{userId}")
-    public ResponseEntity<?>  assignRole(@PathVariable String userId, @RequestParam String roleName){
+    @PutMapping("/assign-role/user/{email}")
+    public ResponseEntity<?>  assignRole(@PathVariable String email, @RequestParam String roleName){
 
-        roleService.assignRole(userId, roleName);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return roleService.assignRole(email, roleName);
+
     }
+    @PutMapping("/unassign-role/user/{email}")
+    public ResponseEntity<?>  unassignRole(@PathVariable String email, @RequestParam String roleName){
+
+        return roleService.unassignRole(email, roleName);
+
+    }
+
 
 
 }

@@ -4,7 +4,6 @@ import com.intelli.africa.model.UserRegistrationRecord;
 import com.intelli.africa.response.ApiResponse;
 import com.intelli.africa.service.KeycloakUserService;
 import lombok.AllArgsConstructor;
-import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,24 +24,46 @@ public class KeycloakUserApi {
         return keycloakUserService.createUser(userRegistrationRecord);
     }
 
-    @GetMapping
-    public UserRepresentation getUser(Principal principal) {
-
+    @GetMapping("/get")
+    public ResponseEntity<ApiResponse> getUser(Principal principal) {
         return keycloakUserService.getUserById(principal.getName());
     }
 
-    @DeleteMapping("/{userId}")
-    public void deleteUserById(@PathVariable String userId) {
-        keycloakUserService.deleteUserById(userId);
+    @GetMapping("/all")
+    public ResponseEntity<ApiResponse> getUsers() {
+        return keycloakUserService.getUsers();
+    }
+
+    @DeleteMapping("/{email}")
+    //@PreAuthorize("hasAnyRole('admin')")
+    public ResponseEntity<ApiResponse> deleteUserByEmail(@PathVariable String email) {
+
+        return keycloakUserService.deleteUserByEmail(email);
+    }
+    @PutMapping("/disable/{email}")
+    //@PreAuthorize("hasAnyRole('admin')")
+    public ResponseEntity<ApiResponse> disableUserByEmail(@PathVariable String email) {
+
+        return keycloakUserService.disableUserByEmail(email);
     }
 
 
-    @PutMapping("/{userId}/send-verify-email")
-    public void sendVerificationEmail(@PathVariable String userId) {
-        keycloakUserService.emailVerification(userId);
+    @PutMapping("/send-verify-email/{email}")
+    public ResponseEntity<ApiResponse> sendVerificationEmail(@PathVariable String email) {
+        return keycloakUserService.emailVerification(email);
     }
-    @PutMapping("/update-password")
-    public void updatePassword(Principal principal) {
-        keycloakUserService.updatePassword(principal.getName());
+
+    @PutMapping("/update-password/{email}")
+    public ResponseEntity<ApiResponse> updatePassword(@PathVariable String email) {
+        return keycloakUserService.updatePassword(email);
+    }
+
+    @GetMapping("/roles/{email}")
+    public ResponseEntity<ApiResponse> getUserRoles(@PathVariable String email) {
+        return keycloakUserService.getUserRoles(email);
+    }
+    @GetMapping("/groups/{email}")
+    public ResponseEntity<ApiResponse> getUserGroups(@PathVariable String email) {
+        return keycloakUserService.getUserGroups(email);
     }
 }

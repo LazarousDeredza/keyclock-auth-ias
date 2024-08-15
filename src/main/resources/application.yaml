@@ -14,16 +14,22 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: http://${keycloak.domain}/realms/${keycloak.realm}
-jwt:
-  auth:
-    converter:
-      resource-id: authenticationClientId
+#jwt:
+#  auth:
+#    converter:
+#      resource-id: authenticationClientId
+
+#jwt:
+#  auth:
+#    converter:
+#      resource-id: admin-cli
 
 keycloak:
   realm: intelli
   domain: localhost:8080
   adminClientId: admin-cli
   adminClientSecret: ZXduDcu4ckBCULv7lNNRKV1ymx7TlrMH
-  client: authenticationClientId
+  #client: authenticationClientId
+  #client: admin-cli
   urls:
     auth: http://${keycloak.domain}
